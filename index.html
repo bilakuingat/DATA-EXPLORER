@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATA EXPLORER - Media Pembelajaran Analisis Data Kelas 8 SMP</title>
+    <style>
+        /* ==================== GLOBAL STYLES ==================== */
+        :root {
+            --primary-navy: #1B365D;
+            --secondary-navy: #0F2537;
+            --accent-blue: #3A86FF;
+            --light-blue: #E8F1F5;
+            --bg-white: #FFFFFF;
+            --card-bg: #F8FAFC;
+            --success-green: #2ECC71;
+            --warning-yellow: #F1C40F;
+            --danger-red: #E74C3C;
+            --text-dark: #2C3E50;
+            --text-muted: #7F8C8D;
+            --border-color: #CBD5E1;
+            --excel-green: #107C41;
+            --excel-header-bg: #F3F3F3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        #sidebar {
+            width: 280px;
+            background-color: var(--primary-navy);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .brand-header {
+            padding: 20px 15px;
+            background-color: var(--secondary-navy);
+            text-align: center;
+            border-bottom: 2px solid var(--accent-blue);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--warning-yellow);
+            letter-spacing: 1px;
+        }
+
+        .brand-tagline {
+            font-size: 0.75rem;
+            color: #A0AEC0;
+            margin-top: 4px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--warning-yellow);
+        }
+
+        .nav-item.active {
+            background-color: rgba(58, 134, 255, 0.2);
+            border-left-color: var(--warning-yellow);
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+            background-color: var(--secondary-navy);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--warning-yellow);
+            color: var(--primary-navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* ==================== MAIN CONTENT AREA ==================== */
+        #main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #F1F5F9;
+        }
+
+        /* Header Top */
+        #top-header {
+            background-color: white;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .header-title-box h2 {
+            font-size: 1.2rem;
+            color: var(--primary-navy);
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-badge {
+            background-color: var(--light-blue);
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary-navy);
+            font-size: 0.9rem;
+        }
+
+        .progress-box {
+            width: 150px;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 3px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--success-green);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Scrollable Content */
+        #content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .page-section {
+            display: none;
+            max-width: 1100px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Bottom Navigation Footer */
+        #bottom-nav {
+            background-color: white;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+
+        .btn-secondary {
+            background-color: #E2E8F0;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #CBD5E1;
+        }
+
+        .btn-success {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-yellow);
+            color: var(--primary-navy);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==================== CARD & UI COMPONENTS ==================== */
+        .hero-card {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, #2563EB 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .hero-card h1 { font-size: 1.8rem; margin-bottom: 10px; }
+        .hero-card p { font-size: 1rem; opacity: 0.9; }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--accent-blue);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--primary-navy);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-box {
+            background-color: var(--light-blue);
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.88rem;
+        }
+
+        .example-box ul {
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+
+        /* Interactive Quiz Component */
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            text-align: left;
+            background-color: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background-color: var(--light-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent-blue);
+            background-color: rgba(58, 134, 255, 0.1);
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* ==================== EXCEL SIMULATOR COMPONENT ==================== */
+        .excel-container {
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .excel-ribbon {
+            background-color: #F3F3F3;
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+        }
+
+        .excel-formula-bar {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 4px 10px;
+        }
+
+        .name-box {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.85rem;
+            background-color: #FAFAFA;
+        }
+
+        .fx-label {
+            padding: 0 10px;
+            font-weight: bold;
+            color: #777;
+            font-style: italic;
+        }
+
+        .formula-input {
+            flex: 1;
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .formula-input:focus {
+            border-color: var(--excel-green);
+        }
+
+        .excel-grid-wrapper {
+            overflow-x: auto;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .excel-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 0.85rem;
+            user-select: none;
+        }
+
+        .excel-table th, .excel-table td {
+            border: 1px solid #D0D0D0;
+            height: 26px;
+            min-width: 90px;
+            padding: 0 6px;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        .excel-table th {
+            background-color: var(--excel-header-bg);
+            font-weight: normal;
+            color: #444;
+            text-align: center;
+        }
+
+        .excel-table td {
+            background-color: white;
+            cursor: cell;
+            white-space: nowrap;
+        }
+
+        .excel-table td.active-cell {
+            outline: 2px solid var(--excel-green);
+            z-index: 2;
+        }
+
+        .excel-table td.in-range {
+            background-color: rgba(16, 124, 65, 0.15) !important;
+        }
+
+        .excel-table .row-header {
+            width: 40px;
+            min-width: 40px;
+            text-align: center;
+            background-color: var(--excel-header-bg);
+        }
+
+        /* Filter Controls */
+        .filter-toolbar {
+            padding: 10px;
+            background-color: #E2E8F0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .badge-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            width: 140px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 2px solid var(--border-color);
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
+        .badge-card.unlocked {
+            opacity: 1;
+            border-color: var(--warning-yellow);
+            background: linear-gradient(180deg, #FFFDF0 0%, #FFFFFF 100%);
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .badge-name {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+        }
+
+        /* Responsive UI */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            #sidebar { width: 100%; height: auto; max-height: 200px; }
+            .stats-container { gap: 8px; }
+            .progress-box { width: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar">
+        <div class="brand-header">
+            <div class="brand-title">📊 DATA EXPLORER</div>
+            <div class="brand-tagline">Kenali Data, Kuasai Excel, Jadilah Data Analyst!</div>
+        </div>
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item active" data-page="1"><span class="nav-icon">🏠</span> 1. BERANDA - Mengenal Data</li>
+            <li class="nav-item" data-page="2"><span class="nav-icon">📊</span> 2. Mengenal Microsoft Excel</li>
+            <li class="nav-item" data-page="3"><span class="nav-icon">💾</span> 3. Menyimpan & Filter Data</li>
+            <li class="nav-item" data-page="4"><span class="nav-icon">➕</span> 4. Excel Sebagai Kalkulator</li>
+            <li class="nav-item" data-page="5"><span class="nav-icon">🧮</span> 5. Fungsi SUM</li>
+            <li class="nav-item" data-page="6"><span class="nav-icon">📈</span> 6. Fungsi AVERAGE, MIN, MAX</li>
+            <li class="nav-item" data-page="7"><span class="nav-icon">🔀</span> 7. Fungsi IF</li>
+            <li class="nav-item" data-page="8"><span class="nav-icon">🏆</span> 8. FINAL CHALLENGE</li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="profile-card">
+                <div class="avatar" id="avatar-initial">S</div>
+                <div>
+                    <div style="font-weight: bold; font-size: 0.9rem;" id="student-name">Siswa SMP</div>
+                    <div style="font-size: 0.75rem; color: #A0AEC0;">Kelas 8 Informatika</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTAINER -->
+    <main id="main-container">
+        <!-- Top Header Stats -->
+        <header id="top-header">
+            <div class="header-title-box">
+                <h2 id="current-page-title">1. BERANDA - Mengenal Data</h2>
+            </div>
+            <div class="stats-container">
+                <div class="stat-badge">
+                    <span>⭐ Poin:</span>
+                    <span id="total-points" style="color: #D97706;">0</span>
+                </div>
+                <div class="stat-badge progress-box">
+                    <div>
+                        <div style="font-size: 0.75rem; display: flex; justify-content: space-between;">
+                            <span>Progres</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Pages -->
+        <section id="content-area">
+            
+            <!-- PAGE 1: BERANDA -->
+            <div class="page-section active" id="page-1">
+                <div class="hero-card">
+                    <h1>SELAMAT DATANG DI DATA EXPLORER! 🚀</h1>
+                    <p>Yuk, belajar mengenal data dan mengolahnya menggunakan Microsoft Excel!</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📌 A. Pengertian Data</div>
+                    <p><strong>Data</strong> adalah sekumpulan fakta, angka, keterangan, atau informasi yang diperoleh melalui pengamatan, pengukuran, pencatatan, maupun kegiatan lainnya.</p>
+                    <div class="example-box">
+                        <strong>Contoh Data di Sekitar Murid SMP:</strong>
+                        <ul>
+                            <li>Data nilai ulangan harian Informatika</li>
+                            <li>Data hobi dan makanan favorit teman sekelas</li>
+                            <li>Data jumlah uang jajan harian</li>
+                            <li>Data tinggi dan berat badan siswa</li>
+                            <li>Data ekstrakurikuler yang diikuti</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">🔍 B. Pengertian Analisis Data</div>
+                    <p><strong>Analisis Data</strong> adalah proses mengumpulkan, memeriksa, mengelompokkan, mengolah, dan menafsitkan data untuk mendapatkan informasi yang bermanfaat.</p>
+                    <div class="example-box">
+                        <strong>Studi Kasus:</strong> Mengetahui ekstrakurikuler yang paling diminati kelas 8.
+                        <ol style="margin-left: 20px; margin-top: 5px;">
+                            <li>Mengumpulkan data pilihan ekskul murid.</li>
+                            <li>Mengelompokkan pilihan (Pramuka, Futsal, Musik, Coding).</li>
+                            <li>Menghitung jumlah peminat setiap ekskul.</li>
+                            <li>Menyajikan dalam bentuk grafik/tabel.</li>
+                            <li>Menarik kesimpulan: <em>Ekskul paling populer adalah Futsal!</em></li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">📂 C. Macam-Macam Data</h3>
+                <div class="card-grid">
+                    <div class="card" style="border-left-color: #8E44AD;">
+                        <div class="card-title">1. Data Kualitatif</div>
+                        <p>Data berupa kategori, sifat, kata-kata, atau keterangan (bukan angka).</p>
+                        <div class="example-box">Contoh: Hobi, warna kesukaan, makanan favorit, jenis kendaraan ke sekolah.</div>
+                    </div>
+                    <div class="card" style="border-left-color: #27AE60;">
+                        <div class="card-title">2. Data Kuantitatif</div>
+                        <p>Data berbentuk angka yang dapat dihitung atau diukur secara pasti.</p>
+                        <div class="example-box">Terbagi menjadi 2 jenis: Diskrit & Kontinu.</div>
+                    </div>
+                    <div class="card" style="border-left-color: #E67E22;">
+                        <div class="card-title">a. Kuantitatif Diskrit</div>
+                        <p>Data hasil <strong>menghitung</strong>, berupa bilangan bulat utuh.</p>
+                        <div class="example-box">Contoh: Jumlah buku (5 buah), jumlah komputer (20 unit), jumlah saudara (2 orang).</div>
+                    </div>
+                    <div class="card" style="border-left-color: #2980B9;">
+                        <div class="card-title">b. Kuantitatif Kontinu</div>
+                        <p>Data hasil <strong>mengukur</strong>, dapat memiliki nilai desimal/pecahan.</p>
+                        <div class="example-box">Contoh: Tinggi badan (155,5 cm), berat badan (45,7 kg), suhu tubuh (36,6 °C).</div>
+                    </div>
+                </div>
+
+                <!-- Quiz Interactive Page 1 -->
+                <div class="quiz-container">
+                    <h3 style="color: var(--primary-navy); margin-bottom: 10px;">🎯 Kuis Tebak Jenis Data</h3>
+                    <p id="quiz-question" style="font-weight: 500; margin-bottom: 15px;">Soal 1 dari 8: Loading...</p>
+                    <div id="quiz-options"></div>
+                    <div id="quiz-feedback" class="quiz-feedback"></div>
+                </div>
+            </div>
+
+            <!-- PAGE 2: MENGENAL EXCEL -->
+            <div class="page-section" id="page-2">
+                <h2>📊 KENALAN DENGAN MICROSOFT EXCEL</h2>
+                <p style="margin-bottom: 20px;">Aplikasi spreadsheet andalan untuk mengolah data secara otomatis!</p>
+
+                <div class="card">
+                    <div class="card-title">💡 Apa Itu Microsoft Excel?</div>
+                    <p><strong>Microsoft Excel</strong> adalah aplikasi perangkat lunak lembar kerja (spreadsheet) yang digunakan untuk memasukkan, menyimpan, mengatur, menghitung, dan menganalisis data dalam bentuk baris dan kolom.</p>
+                </div>
+
+                <div class="card" style="margin-top: 15px;">
+                    <div class="card-title">⚙️ Kegunaan Utama Excel:</div>
+                    <ul style="margin-left: 20px;">
+                        <li>Mengolah dan merekap nilai siswa.</li>
+                        <li>Mencatat daftar penjualan kantin sekolah.</li>
+                        <li>Mengelola keuangan kas kelas.</li>
+                        <li>Menghitung rata-rata, nilai tertinggi, dan terendah otomatis.</li>
+                        <li>Membuat grafik visualisasi data.</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">📖 Istilah Penting Excel (Klik Card untuk Detail)</h3>
+                <div class="card-grid" id="excel-terms-grid">
+                    <!-- Dynamic Populated Terms -->
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">🖥️ Bagian-Bagian Antarmuka Excel</h3>
+                <div class="card" style="background-color: #F8FAFC;">
+                    <ul style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; list-style: none;">
+                        <li>📌 <strong>Title Bar:</strong> Judul dokumen</li>
+                        <li>📌 <strong>Quick Access:</strong> Pintasan tombol</li>
+                        <li>📌 <strong>Ribbon:</strong> Kumpulan menu & alat</li>
+                        <li>📌 <strong>Name Box:</strong> Alamat sel aktif (misal A1)</li>
+                        <li>📌 <strong>Formula Bar:</strong> Tempat ketik rumus</li>
+                        <li>📌 <strong>Column Heading:</strong> Nama Kolom (A, B, C)</li>
+                        <li>📌 <strong>Row Heading:</strong> Angka Baris (1, 2, 3)</li>
+                        <li>📌 <strong>Cell Area:</strong> Area lembar kerja</li>
+                    </ul>
+                </div>
+
+                <!-- Simulator Interactive Page 2 -->
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">🎮 Tantangan Simulator Excel Mini</h3>
+                <div style="background-color: #FEF3C7; padding: 12px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #F59E0B;">
+                    <strong>🎯 Misi Tantangan Page 2:</strong>
+                    <ol style="margin-left: 20px; font-size: 0.9rem;">
+                        <li>Klik sel <strong>A1</strong> dan ketik: <code>Nama</code> lalu Enter</li>
+                        <li>Klik sel <strong>B1</strong> dan ketik: <code>Nilai</code> lalu Enter</li>
+                        <li>Klik sel <strong>A2</strong> dan ketik: <code>Andi</code> lalu Enter</li>
+                        <li>Klik sel <strong>B2</strong> dan ketik: <code>85</code> lalu Enter</li>
+                        <li>Klik sel <strong>C3</strong> untuk menyelesaikan tantangan!</li>
+                    </ol>
+                </div>
+
+                <div class="excel-container">
+                    <div class="excel-ribbon">
+                        <span><strong>Home</strong></span><span>Insert</span><span>Page Layout</span><span>Formulas</span>
+                    </div>
+                    <div class="excel-formula-bar">
+                        <div class="name-box" id="sim1-namebox">A1</div>
+                        <div class="fx-label">fx</div>
+                        <input type="text" class="formula-input" id="sim1-formulabar" placeholder="Isi sel akan tampil di sini">
+                    </div>
+                    <div class="excel-grid-wrapper">
+                        <table class="excel-table" id="sim1-table"></table>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="checkSim1Challenge()">Check Jawaban Tantangan Simulator</button>
+            </div>
+
+            <!-- PAGE 3: MENYIMPAN DAN FILTER DATA -->
+            <div class="page-section" id="page-3">
+                <h2>💾 EXCEL SEBAGAI TEMPAT MENYIMPAN DAN FILTER DATA</h2>
+                <p>Mengatur ribuan data dengan rapi dan mencari informasi dengan cepat!</p>
+
+                <div class="card" style="margin-top: 15px;">
+                    <div class="card-title">📋 Cara Membuat Tabel di Excel:</div>
+                    <ol style="margin-left: 20px;">
+                        <li>Masukkan data secara terstruktur pada kolom dan baris.</li>
+                        <li>Blok seluruh data yang ingin dijadikan tabel.</li>
+                        <li>Klik menu <strong>Insert</strong> &gt; pilih <strong>Table</strong>.</li>
+                        <li>Centang pilihan <em>"My table has headers"</em> lalu klik <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">🔍 Simulasi Data Penjualan &amp; Filter Interaktif</h3>
+                <div class="filter-toolbar">
+                    <label><strong>Filter &amp; Sort:</strong></label>
+                    <button class="btn btn-secondary" onclick="filterSim3('all')">Tampilkan Semua</button>
+                    <button class="btn btn-warning" onclick="filterSim3('gt5')">Jumlah &gt; 5 saja</button>
+                    <button class="btn btn-primary" onclick="sortSim3('asc')">Harga Terkecil ⬆️</button>
+                    <button class="btn btn-primary" onclick="sortSim3('desc')">Harga Terbesar ⬇️</button>
+                </div>
+
+                <div class="excel-container">
+                    <div class="excel-grid-wrapper">
+                        <table class="excel-table" id="sim3-table"></table>
+                    </div>
+                </div>
+                <div id="sim3-feedback" style="margin-top: 10px; font-weight: bold;"></div>
+            </div>
+
+            <!-- PAGE 4: KALKULATOR -->
+            <div class="page-section" id="page-4">
+                <h2>➕ EXCEL SEBAGAI KALKULATOR MATEMATIKA</h2>
+                <p>Excel selalu mengawali rumus atau perhitungan matematika dengan tanda sama dengan (<code>=</code>).</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title">➕ Penjumlahan (+)</div>
+                        <p>Contoh: <code>=A1+B1</code></p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">➖ Pengurangan (-)</div>
+                        <p>Contoh: <code>=A1-B1</code></p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">✖️ Perkalian (*)</div>
+                        <p>Contoh: <code>=A1*B1</code></p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">➗ Pembagian (/)</div>
+                        <p>Contoh: <code>=A1/B1</code></p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">🧮 Uji Coba Kalkulator Mini Excel</div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px;">
+                        <input type="number" id="calc-num1" value="10" style="width: 80px; padding: 6px;">
+                        <select id="calc-op" style="padding: 6px;">
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="*">*</option>
+                            <option value="/">/</option>
+                        </select>
+                        <input type="number" id="calc-num2" value="5" style="width: 80px; padding: 6px;">
+                        <button class="btn btn-primary" onclick="runMiniCalc()">Hitung</button>
+                    </div>
+                    <div id="calc-result" class="example-box" style="margin-top: 10px; font-weight: bold;">
+                        Hasil Formula Excel: =10+5 adalah 15
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">🎮 Practice: Ketik Rumus Matematika Pada Sel C1</h3>
+                <p style="font-size: 0.9rem;">Cobalah memasukkan rumus perkalian <code>=A1*B1</code> pada sel C1!</p>
+                
+                <div class="excel-container">
+                    <div class="excel-formula-bar">
+                        <div class="name-box" id="sim4-namebox">C1</div>
+                        <div class="fx-label">fx</div>
+                        <input type="text" class="formula-input" id="sim4-formulabar" onkeydown="handleSim4Formula(event)">
+                    </div>
+                    <div class="excel-grid-wrapper">
+                        <table class="excel-table" id="sim4-table"></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 5: FUNGSI SUM -->
+            <div class="page-section" id="page-5">
+                <h2>🧮 FUNGSI SUM: MENJUMLAHKAN DATA CEPAT</h2>
+                <div class="card">
+                    <div class="card-title">💡 Apa Itu SUM?</div>
+                    <p>Fungsi <strong>SUM</strong> digunakan untuk menjumlahkan sekumpulan data angka dalam rentang (range) tertentu secara otomatis.</p>
+                    <div class="example-box">
+                        <strong>Perbandingan:</strong><br>
+                        Tanpa SUM: <code>=A1+A2+A3+A4+A5+A6+A7+A8</code> (Lama &amp; Rawan Salah)<br>
+                        Dengan SUM: <code>=SUM(A1:A8)</code> (Cepat &amp; Praktis!)
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">🎮 Simulasi Ketik Rumus SUM</h3>
+                <p style="font-size: 0.9rem;">Ketik rumus <code>=SUM(B2:B6)</code> pada sel <strong>B7</strong> di bawah ini!</p>
+                
+                <div class="excel-container">
+                    <div class="excel-formula-bar">
+                        <div class="name-box" id="sim5-namebox">B7</div>
+                        <div class="fx-label">fx</div>
+                        <input type="text" class="formula-input" id="sim5-formulabar" placeholder="Ketik =SUM(B2:B6) lalu tekan Enter" onkeydown="handleSim5Enter(event)">
+                    </div>
+                    <div class="excel-grid-wrapper">
+                        <table class="excel-table" id="sim5-table"></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 6: AVERAGE MIN MAX -->
+            <div class="page-section" id="page-6">
+                <h2>📈 FUNGSI AVERAGE, MIN, DAN MAX</h2>
+                <div class="card-grid">
+                    <div class="card" style="border-left-color: #3498DB;">
+                        <div class="card-title">📊 AVERAGE</div>
+                        <p>Menghitung rata-rata angka.</p>
+                        <p><code>=AVERAGE(B2:B6)</code></p>
+                    </div>
+                    <div class="card" style="border-left-color: #E74C3C;">
+                        <div class="card-title">🔻 MIN</div>
+                        <p>Mencari nilai terkecil/terendah.</p>
+                        <p><code>=MIN(B2:B6)</code></p>
+                    </div>
+                    <div class="card" style="border-left-color: #2ECC71;">
+                        <div class="card-title">🔺 MAX</div>
+                        <p>Mencari nilai terbesar/tertinggi.</p>
+                        <p><code>=MAX(B2:B6)</code></p>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">🎮 Praktik Langsung Analisis Nilai</h3>
+                <p style="font-size: 0.9rem;">Isilah sel B7 dengan <code>=AVERAGE(B2:B6)</code>, B8 dengan <code>=MIN(B2:B6)</code>, dan B9 dengan <code>=MAX(B2:B6)</code>.</p>
+
+                <div class="excel-container">
+                    <div class="excel-formula-bar">
+                        <div class="name-box" id="sim6-namebox">B7</div>
+                        <div class="fx-label">fx</div>
+                        <input type="text" class="formula-input" id="sim6-formulabar" onkeydown="handleSim6Enter(event)">
+                    </div>
+                    <div class="excel-grid-wrapper">
+                        <table class="excel-table" id="sim6-table"></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 7: FUNGSI IF -->
+            <div class="page-section" id="page-7">
+                <h2>🔀 FUNGSI IF: AJARI EXCEL MEMBUAT KEPUTUSAN</h2>
+                <div class="card">
+                    <div class="card-title">💡 Penjelasan Fungsi IF</div>
+                    <p>Fungsi <strong>IF</strong> digunakan untuk menghasilkan nilai berdasarkan pengujian kondisi logis (Benar / Salah).</p>
+                    <div class="example-box">
+                        <strong>Rumus IF Sederhana:</strong><br>
+                        <code>=IF(B2&gt;=75, "Lulus", "Belum Lulus")</code><br><br>
+                        <em>Artinya: Jika nilai di sel B2 lebih besar atau sama dengan 75, maka hasilnya "Lulus", jika kurang maka "Belum Lulus".</em>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 25px; color: var(--primary-navy);">🎮 Praktik Uji Coba Fungsi IF</h3>
+                <p style="font-size: 0.9rem;">Ketik rumus <code>=IF(B2&gt;=75,"Lulus","Remedi")</code> di sel <strong>C2</strong> lalu Enter!</p>
+
+                <div class="excel-container">
+                    <div class="excel-formula-bar">
+                        <div class="name-box" id="sim7-namebox">C2</div>
+                        <div class="fx-label">fx</div>
+                        <input type="text" class="formula-input" id="sim7-formulabar" onkeydown="handleSim7Enter(event)">
+                    </div>
+                    <div class="excel-grid-wrapper">
+                        <table class="excel-table" id="sim7-table"></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 8: FINAL CHALLENGE -->
+            <div class="page-section" id="page-8">
+                <div class="hero-card" style="background: linear-gradient(135deg, #1E3A8A 0%, #D97706 100%);">
+                    <h1>🏆 FINAL MISSION: JADILAH DATA ANALYST!</h1>
+                    <p>Skenario: Kamu adalah pengelola kantin sekolah. Olah data penjualan berikut secara mandiri!</p>
+                </div>
+
+                <div class="excel-container">
+                    <div class="excel-formula-bar">
+                        <div class="name-box" id="sim8-namebox">E2</div>
+                        <div class="fx-label">fx</div>
+                        <input type="text" class="formula-input" id="sim8-formulabar" placeholder="Ketik rumus di sini..." onkeydown="handleSim8Enter(event)">
+                    </div>
+                    <div class="excel-grid-wrapper">
+                        <table class="excel-table" id="sim8-table"></table>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <h3 style="color: var(--primary-navy);">📝 Pertanyaan Analisis Keputusan Kantin</h3>
+                    <div style="margin-top: 15px;">
+                        <label><strong>1. Barang apa yang memiliki total jumlah terjual terbanyak?</strong></label>
+                        <input type="text" id="final-q1" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--border-color);">
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <label><strong>2. Apa kesimpulan singkat untuk meningkatkan pendapatan kantin minggu depan?</strong></label>
+                        <textarea id="final-q2" rows="3" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--border-color);"></textarea>
+                    </div>
+                    <button class="btn btn-warning" style="margin-top: 15px;" onclick="submitFinalChallenge()">Kirim Jawaban Final Mission</button>
+                </div>
+
+                <!-- Dashboard Badges & Results -->
+                <h3 style="margin-top: 30px; color: var(--primary-navy);">🏅 Dashboard Pencapaian &amp; Badge</h3>
+                <div class="badge-list" id="badge-container">
+                    <div class="badge-card" id="badge-1">
+                        <div class="badge-icon">🌱</div>
+                        <div class="badge-name">Data Explorer</div>
+                    </div>
+                    <div class="badge-card" id="badge-2">
+                        <div class="badge-icon">📊</div>
+                        <div class="badge-name">Excel Beginner</div>
+                    </div>
+                    <div class="badge-card" id="badge-3">
+                        <div class="badge-icon">⚡</div>
+                        <div class="badge-name">Formula Master</div>
+                    </div>
+                    <div class="badge-card" id="badge-4">
+                        <div class="badge-icon">👑</div>
+                        <div class="badge-name">Data Analyst</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Bottom Navigation Controls -->
+        <footer id="bottom-nav">
+            <button class="btn btn-secondary" id="btn-prev" onclick="changePage(-1)">⬅️ Sebelumnya</button>
+            <button class="btn btn-secondary" onclick="navigateTo(1)">🏠 Beranda</button>
+            <button class="btn btn-primary" id="btn-next" onclick="changePage(1)">Selanjutnya ➡️</button>
+        </footer>
+    </main>
+
+    <!-- JAVASCRIPT CODE ENGINE -->
+    <script>
+        /* ==================== STATE MANAGEMENT & STORAGE ==================== */
+        let state = {
+            currentPage: 1,
+            totalPoints: 0,
+            completedPages: new Set(),
+            badges: [],
+            quizIndex: 0,
+            quizScore: 0
+        };
+
+        const totalPages = 8;
+
+        // Load State from LocalStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('DATA_EXPLORER_STATE');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state.totalPoints = parsed.totalPoints || 0;
+                state.completedPages = new Set(parsed.completedPages || []);
+                state.badges = parsed.badges || [];
+            }
+            updateUI();
+        }
+
+        function saveProgress() {
+            const dataToSave = {
+                totalPoints: state.totalPoints,
+                completedPages: Array.from(state.completedPages),
+                badges: state.badges
+            };
+            localStorage.setItem('DATA_EXPLORER_STATE', JSON.stringify(dataToSave));
+            updateUI();
+        }
+
+        function addPoints(pts) {
+            state.totalPoints += pts;
+            saveProgress();
+        }
+
+        function unlockBadge(badgeId) {
+            if (!state.badges.includes(badgeId)) {
+                state.badges.push(badgeId);
+                saveProgress();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('total-points').innerText = state.totalPoints;
+            const percent = Math.round((state.completedPages.size / totalPages) * 100);
+            document.getElementById('progress-percent').innerText = percent + '%';
+            document.getElementById('progress-bar').style.width = percent + '%';
+
+            // Badges unlock visual
+            if (state.totalPoints >= 20) unlockBadge('badge-1');
+            if (state.totalPoints >= 50) unlockBadge('badge-2');
+            if (state.totalPoints >= 90) unlockBadge('badge-3');
+            if (state.totalPoints >= 150) unlockBadge('badge-4');
+
+            state.badges.forEach(b => {
+                const el = document.getElementById(b);
+                if (el) el.classList.add('unlocked');
+            });
+        }
+
+        /* ==================== NAVIGATION ENGINE ==================== */
+        function navigateTo(pageNumber) {
+            if (pageNumber < 1 || pageNumber > totalPages) return;
+            
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            state.currentPage = pageNumber;
+            document.getElementById(`page-${pageNumber}`).classList.add('active');
+
+            const activeNav = document.querySelector(`.nav-item[data-page="${pageNumber}"]`);
+            if (activeNav) {
+                activeNav.classList.add('active');
+                document.getElementById('current-page-title').innerText = activeNav.innerText;
+            }
+
+            // Mark completed
+            state.completedPages.add(pageNumber);
+            saveProgress();
+
+            // Toggle Buttons
+            document.getElementById('btn-prev').disabled = (pageNumber === 1);
+            document.getElementById('btn-next').disabled = (pageNumber === totalPages);
+
+            // Scroll to top
+            document.getElementById('content-area').scrollTop = 0;
+        }
+
+        function changePage(delta) {
+            navigateTo(state.currentPage + delta);
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const page = parseInt(this.getAttribute('data-page'));
+                navigateTo(page);
+            });
+        });
+
+        /* ==================== PAGE 1: QUIZ ENGINE ==================== */
+        const quizData = [
+            { q: "Jumlah komputer di laboratorium sekolah sebanyak 20 unit.", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 1 },
+            { q: "Warna kesukaan Budi adalah Biru Navy.", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 0 },
+            { q: "Tinggi badan Siti diukur mencapai 156,4 cm.", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 2 },
+            { q: "Jumlah adik kandung yang dimiliki Roni adalah 3 orang.", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 1 },
+            { q: "Makanan favorit siswa kelas 8 adalah Mie Ayam.", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 0 },
+            { q: "Berat badan sampel siswa adalah 48,2 kg.", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 2 },
+            { q: "Jumlah buku paket yang ada di tas sekolah.", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 1 },
+            { q: "Tingkat kepuasan layanan kantin (Sangat Puas).", opt: ["Kualitatif", "Kuantitatif Diskrit", "Kuantitatif Kontinu"], ans: 0 }
+        ];
+
+        function loadQuiz() {
+            if (state.quizIndex >= quizData.length) {
+                document.getElementById('quiz-question').innerText = "🎉 Kuis Selesai! Kamu mendapat skor sempurna!";
+                document.getElementById('quiz-options').innerHTML = "";
+                return;
+            }
+            const current = quizData[state.quizIndex];
+            document.getElementById('quiz-question').innerText = `Soal ${state.quizIndex + 1} dari ${quizData.length}: ${current.q}`;
+            const optDiv = document.getElementById('quiz-options');
+            optDiv.innerHTML = "";
+            
+            current.opt.forEach((o, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-option";
+                btn.innerText = o;
+                btn.onclick = () => checkQuizAnswer(idx);
+                optDiv.appendChild(btn);
+            });
+            document.getElementById('quiz-feedback').style.display = 'none';
+        }
+
+        function checkQuizAnswer(selectedIdx) {
+            const current = quizData[state.quizIndex];
+            const fb = document.getElementById('quiz-feedback');
+            fb.style.display = 'block';
+
+            if (selectedIdx === current.ans) {
+                fb.style.backgroundColor = '#D1FAE5';
+                fb.style.color = '#065F46';
+                fb.innerText = "✅ Benar sekali! (+10 Poin)";
+                addPoints(10);
+            } else {
+                fb.style.backgroundColor = '#FEE2E2';
+                fb.style.color = '#991B1B';
+                fb.innerText = "❌ Kurang tepat. Pelajari lagi beda kualitatif & kuantitatif ya!";
+            }
+
+            setTimeout(() => {
+                state.quizIndex++;
+                loadQuiz();
+            }, 1200);
+        }
+
+        /* ==================== PAGE 2: EXCEL TERMS & SIMULATOR 1 ==================== */
+        const termsData = [
+            { title: "Workbook", desc: "File utama lembar kerja Excel (seperti buku besar).", ex: "Contoh: Data_Kantin.xlsx" },
+            { title: "Worksheet", desc: "Halaman lembar kerja di dalam Workbook.", ex: "Contoh: Sheet1, Sheet2" },
+            { title: "Row (Baris)", desc: "Garis mendatar (horizontal) yang ditandai Angka.", ex: "Contoh: Baris 1, Baris 2" },
+            { title: "Column (Kolom)", desc: "Garis tegak (vertikal) yang ditandai Huruf.", ex: "Contoh: Kolom A, B, C" },
+            { title: "Cell (Sel)", desc: "Pertemuan antara kolom dan baris.", ex: "Contoh: A1, B2, C5" },
+            { title: "Range", desc: "Kumpulan dari beberapa sel yang dipilih.", ex: "Contoh: A1:B5" },
+            { title: "Formula", desc: "Rumus perhitungan manual yang dibuat sendiri.", ex: "Contoh: =A1+B1" },
+            { title: "Function", desc: "Rumus bawaan otomatis bawaan Excel.", ex: "Contoh: =SUM(A1:A5)" }
+        ];
+
+        function renderTerms() {
+            const grid = document.getElementById('excel-terms-grid');
+            termsData.forEach(t => {
+                const card = document.createElement('div');
+                card.className = "card";
+                card.innerHTML = `
+                    <div class="card-title">${t.title}</div>
+                    <p style="font-size: 0.88rem;">${t.desc}</p>
+                    <div class="example-box">${t.ex}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render Generic Interactive Table
+        function renderGenericTable(tableId, rows, cols, dataMap = {}) {
+            const table = document.getElementById(tableId);
+            table.innerHTML = "";
+            
+            // Header Row
+            let trHead = document.createElement('tr');
+            trHead.appendChild(document.createElement('th')); // Top left empty
+            for (let c = 0; c < cols; c++) {
+                let th = document.createElement('th');
+                th.innerText = String.fromCharCode(65 + c);
+                trHead.appendChild(th);
+            }
+            table.appendChild(trHead);
+
+            // Body Rows
+            for (let r = 1; r <= rows; r++) {
+                let tr = document.createElement('tr');
+                let tdRow = document.createElement('td');
+                tdRow.className = "row-header";
+                tdRow.innerText = r;
+                tr.appendChild(tdRow);
+
+                for (let c = 0; c < cols; c++) {
+                    let colLetter = String.fromCharCode(65 + c);
+                    let cellAddr = colLetter + r;
+                    let td = document.createElement('td');
+                    td.dataset.addr = cellAddr;
+                    td.innerText = dataMap[cellAddr] || "";
+                    
+                    td.onclick = function() {
+                        document.querySelectorAll(`#${tableId} td`).forEach(el => el.classList.remove('active-cell'));
+                        this.classList.add('active-cell');
+                        const nameBox = document.getElementById(tableId.replace('-table', '-namebox'));
+                        if (nameBox) nameBox.innerText = cellAddr;
+                    };
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+        }
+
+        function checkSim1Challenge() {
+            const getVal = (addr) => {
+                const cell = document.querySelector(`#sim1-table td[data-addr="${addr}"]`);
+                return cell ? cell.innerText.trim() : "";
+            };
+
+            if (getVal('A1') === 'Nama' && getVal('B1') === 'Nilai' && getVal('A2') === 'Andi' && getVal('B2') === '85') {
+                alert("🎉 Selamat! Tantangan Simulator 1 Berhasil! (+20 Poin)");
+                addPoints(20);
+            } else {
+                alert("❌ Isi sel belum sesuai petunjuk misi. Coba periksa lagi!");
+            }
+        }
+
+        /* ==================== PAGE 3: SIMULATOR FILTER ==================== */
+        const initialSalesData = [
+            { no: 1, nama: "Buku Tulis", jumlah: 5, harga: 5000 },
+            { no: 2, nama: "Pulpen", jumlah: 10, harga: 3000 },
+            { no: 3, nama: "Pensil", jumlah: 8, harga: 2500 },
+            { no: 4, nama: "Penghapus", jumlah: 6, harga: 2000 },
+            { no: 5, nama: "Penggaris", jumlah: 4, harga: 4000 },
+            { no: 6, nama: "Spidol", jumlah: 3, harga: 7000 },
+            { no: 7, nama: "Buku Gambar", jumlah: 5, harga: 6000 },
+            { no: 8, nama: "Rautan", jumlah: 7, harga: 2500 },
+            { no: 9, nama: "Map Plastik", jumlah: 4, harga: 3500 },
+            { no: 10, nama: "Stabilo", jumlah: 2, harga: 8000 }
+        ];
+
+        function renderSalesTable(data) {
+            const table = document.getElementById('sim3-table');
+            table.innerHTML = `
+                <tr>
+                    <th>No</th>
+                    <th>Nama Barang</th>
+                    <th>Jumlah</th>
+                    <th>Harga (Rp)</th>
+                    <th>Total (Rp)</th>
+                </tr>
+            `;
+            data.forEach(item => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:center;">${item.no}</td>
+                    <td>${item.nama}</td>
+                    <td style="text-align:center;">${item.jumlah}</td>
+                    <td>${item.harga.toLocaleString('id-ID')}</td>
+                    <td>${(item.jumlah * item.harga).toLocaleString('id-ID')}</td>
+                `;
+                table.appendChild(tr);
+            });
+        }
+
+        function filterSim3(type) {
+            if (type === 'all') {
+                renderSalesTable(initialSalesData);
+            } else if (type === 'gt5') {
+                const filtered = initialSalesData.filter(d => d.jumlah > 5);
+                renderSalesTable(filtered);
+                document.getElementById('sim3-feedback').innerText = "✅ Filter Berhasil: Menampilkan barang dengan jumlah > 5 (+15 Poin)";
+                addPoints(15);
+            }
+        }
+
+        function sortSim3(dir) {
+            let sorted = [...initialSalesData];
+            if (dir === 'asc') sorted.sort((a,b) => a.harga - b.harga);
+            if (dir === 'desc') sorted.sort((a,b) => b.harga - a.harga);
+            renderSalesTable(sorted);
+        }
+
+        /* ==================== PAGE 4: KALKULATOR INTERAKTIF ==================== */
+        function runMiniCalc() {
+            const n1 = parseFloat(document.getElementById('calc-num1').value) || 0;
+            const n2 = parseFloat(document.getElementById('calc-num2').value) || 0;
+            const op = document.getElementById('calc-op').value;
+            let res = 0;
+            if (op === '+') res = n1 + n2;
+            if (op === '-') res = n1 - n2;
+            if (op === '*') res = n1 * n2;
+            if (op === '/') res = n1 / n2;
+
+            document.getElementById('calc-result').innerHTML = `Hasil Formula Excel: <code>=${n1}${op}${n2}</code> adalah <strong>${res}</strong>`;
+        }
+
+        function handleSim4Formula(e) {
+            if (e.key === 'Enter') {
+                const val = e.target.value.trim().toUpperCase();
+                const cellC1 = document.querySelector('#sim4-table td[data-addr="C1"]');
+                if (val === '=A1*B1' || val === '=10*5') {
+                    if (cellC1) cellC1.innerText = "50";
+                    alert("✅ Benar! Formula perkalian bekerja! (+15 Poin)");
+                    addPoints(15);
+                } else {
+                    alert("❌ Rumus kurang tepat. Cobalah mengetik: =A1*B1");
+                }
+            }
+        }
+
+        /* ==================== PAGE 5: SIMULATOR SUM ==================== */
+        function handleSim5Enter(e) {
+            if (e.key === 'Enter') {
+                const val = e.target.value.trim().toUpperCase();
+                const cellB7 = document.querySelector('#sim5-table td[data-addr="B7"]');
+                if (val === '=SUM(B2:B6)') {
+                    if (cellB7) cellB7.innerText = "60";
+                    alert("🎉 Hebat! Kamu berhasil menghitung total dengan SUM! (+20 Poin)");
+                    addPoints(20);
+                } else {
+                    alert("❌ Coba lagi! Ketik rumus tepat: =SUM(B2:B6)");
+                }
+            }
+        }
+
+        /* ==================== PAGE 6: AVERAGE MIN MAX ==================== */
+        function handleSim6Enter(e) {
+            if (e.key === 'Enter') {
+                const val = e.target.value.trim().toUpperCase();
+                const addr = document.getElementById('sim6-namebox').innerText;
+                const cell = document.querySelector(`#sim6-table td[data-addr="${addr}"]`);
+
+                if (addr === 'B7' && val === '=AVERAGE(B2:B6)') {
+                    if (cell) cell.innerText = "83";
+                    alert("✅ Rumus AVERAGE Benar!");
+                    addPoints(10);
+                } else if (addr === 'B8' && val === '=MIN(B2:B6)') {
+                    if (cell) cell.innerText = "75";
+                    alert("✅ Rumus MIN Benar!");
+                    addPoints(10);
+                } else if (addr === 'B9' && val === '=MAX(B2:B6)') {
+                    if (cell) cell.innerText = "95";
+                    alert("✅ Rumus MAX Benar!");
+                    addPoints(10);
+                } else {
+                    alert("❌ Periksa kembali rumus dan alamat sel aktifnya!");
+                }
+            }
+        }
+
+        /* ==================== PAGE 7: IF SIMULATOR ==================== */
+        function handleSim7Enter(e) {
+            if (e.key === 'Enter') {
+                const val = e.target.value.trim();
+                const cellC2 = document.querySelector('#sim7-table td[data-addr="C2"]');
+                if (val.replace(/\s+/g, '') === '=IF(B2>=75,"Lulus","Remedi")') {
+                    if (cellC2) cellC2.innerText = "Lulus";
+                    alert("🎉 Luar biasa! Logika IF kamu berhasil! (+20 Poin)");
+                    addPoints(20);
+                } else {
+                    alert("❌ Ketik rumus persis: =IF(B2>=75,\"Lulus\",\"Remedi\")");
+                }
+            }
+        }
+
+        /* ==================== PAGE 8: FINAL CHALLENGE ==================== */
+        function handleSim8Enter(e) {
+            if (e.key === 'Enter') {
+                alert("Formula tercatat di simulator Final Challenge!");
+            }
+        }
+
+        function submitFinalChallenge() {
+            const q1 = document.getElementById('final-q1').value.trim();
+            const q2 = document.getElementById('final-q2').value.trim();
+
+            if (q1 !== "" && q2 !== "") {
+                alert("🏆 SERTIFIKAT SELESAI! Selamat, Kamu Resmi Menjadi DATA ANALYST MUDA! (+50 Poin)");
+                addPoints(50);
+                unlockBadge('badge-4');
+            } else {
+                alert("Mohon isi semua pertanyaan analisis sebelum mengirim.");
+            }
+        }
+
+        /* ==================== INITIALIZATION ==================== */
+        window.onload = function() {
+            loadProgress();
+            loadQuiz();
+            renderTerms();
+
+            // Setup Tables
+            renderGenericTable('sim1-table', 5, 4);
+            renderSalesTable(initialSalesData);
+
+            // Sim 4 Table
+            renderGenericTable('sim4-table', 3, 3, { 'A1': '10', 'B1': '5', 'C1': '?' });
+
+            // Sim 5 Table
+            renderGenericTable('sim5-table', 7, 2, {
+                'A1': 'Barang', 'B1': 'Jumlah',
+                'A2': 'Buku', 'B2': '10',
+                'A3': 'Pensil', 'B3': '15',
+                'A4': 'Pulpen', 'B4': '20',
+                'A5': 'Penghapus', 'B5': '8',
+                'A6': 'Penggaris', 'B6': '7',
+                'A7': 'TOTAL', 'B7': '?'
+            });
+
+            // Sim 6 Table
+            renderGenericTable('sim6-table', 9, 2, {
+                'A1': 'Nama', 'B1': 'Nilai',
+                'A2': 'Andi', 'B2': '85',
+                'A3': 'Budi', 'B3': '90',
+                'A4': 'Citra', 'B4': '75',
+                'A5': 'Dina', 'B5': '95',
+                'A6': 'Eko', 'B6': '80',
+                'A7': 'Rata-rata', 'B7': '?',
+                'A8': 'Nilai Min', 'B8': '?',
+                'A9': 'Nilai Max', 'B9': '?'
+            });
+
+            // Sim 7 Table
+            renderGenericTable('sim7-table', 3, 3, {
+                'A1': 'Nama', 'B1': 'Nilai', 'C1': 'Status',
+                'A2': 'Andi', 'B2': '85', 'C2': '?'
+            });
+
+            // Sim 8 Final Table
+            renderGenericTable('sim8-table', 5, 5, {
+                'A1': 'No', 'B1': 'Barang', 'C1': 'Jumlah', 'D1': 'Harga', 'E1': 'Total',
+                'A2': '1', 'B2': 'Pulpen', 'C2': '10', 'D2': '3000', 'E2': '?'
+            });
+        };
+    </script>
+</body>
+</html>
